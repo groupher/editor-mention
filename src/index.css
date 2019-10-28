@@ -1,6 +1,7 @@
 .cdx-mention {
   color: #1785a9;
   font-weight: bold;
+  outline: none;
 }
 .cdx-mention::before {
   content: 'a';
