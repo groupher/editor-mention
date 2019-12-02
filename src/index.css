@@ -1,3 +1,7 @@
+.cdx-mention-toolbar-block {
+  display: inline-block;
+}
+
 .cdx-mention {
   color: #1785a9;
   font-weight: bold;

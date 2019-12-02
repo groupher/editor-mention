@@ -10,18 +10,18 @@ function debounce(func, wait, immediate) {
   return function executedFunction() {
     var context = this;
     var args = arguments;
-	    
-    var later = function() {
+
+    var later = function () {
       timeout = null;
       if (!immediate) func.apply(context, args);
     };
 
     var callNow = immediate && !timeout;
-	
+
     clearTimeout(timeout);
 
     timeout = setTimeout(later, wait);
-	
+
     if (callNow) func.apply(context, args);
   };
 };
@@ -53,6 +53,7 @@ class Mention {
      */
 
     this.CSS = {
+      mentionToolbarBlock: 'cdx-mention-toolbar-block',
       mentionContainer: 'cdx-mention__container',
       mentionInput: 'cdx-mention__input',
       mention: 'cdx-mention',
@@ -75,10 +76,10 @@ class Mention {
       active: this.api.styles.inlineToolButtonActive
     };
 
-    this.mentionContainer = this._make('div', [ this.CSS.mentionContainer ], {});
-    this.suggestionContainer = this._make('div', [ this.CSS.suggestionContainer ], {});
+    this.mentionContainer = this._make('div', [this.CSS.mentionContainer], {});
+    this.suggestionContainer = this._make('div', [this.CSS.suggestionContainer], {});
 
-    this.mentionInput = this._make('input', [ this.CSS.mentionInput ], {
+    this.mentionInput = this._make('input', [this.CSS.mentionInput], {
       innerHTML: '你想 @ 谁?',
       autofocus: true
     });
@@ -86,7 +87,7 @@ class Mention {
     this.mentionContainer.appendChild(this.mentionInput);
     this.mentionContainer.appendChild(this.suggestionContainer);
 
-    this.mentionInput.addEventListener('keyup',  debounce(this.handleMentionInput.bind(this), 300));
+    this.mentionInput.addEventListener('keyup', debounce(this.handleMentionInput.bind(this), 300));
   }
 
   /**
@@ -128,17 +129,17 @@ class Mention {
   */
   makeSuggestion(user) {
     const mention = document.querySelector('#' + this.CSS.mention);
-    const suggestionWrapper = this._make('div', [ this.CSS.suggestion ], {});
+    const suggestionWrapper = this._make('div', [this.CSS.suggestion], {});
 
-    const avatar = this._make('img', [ this.CSS.mentionAvatar ], {
+    const avatar = this._make('img', [this.CSS.mentionAvatar], {
       src: user.avatar
     });
 
-    const intro = this._make('div', [ this.CSS.mentionIntro ], {});
-    const title = this._make('div', [ this.CSS.mentionTitle ], {
+    const intro = this._make('div', [this.CSS.mentionIntro], {});
+    const title = this._make('div', [this.CSS.mentionTitle], {
       innerText: user.title
     });
-    const desc = this._make('div', [ this.CSS.mentionDesc ], {
+    const desc = this._make('div', [this.CSS.mentionDesc], {
       innerText: user.desc
     });
 
@@ -191,7 +192,7 @@ class Mention {
    * @return {HTMLElement}
   */
   render() {
-    const emptyDiv = this._make('div', null, {});
+    const emptyDiv = this._make('div', [this.CSS.mentionToolbarBlock], {});
 
     return emptyDiv;
   }
@@ -201,7 +202,7 @@ class Mention {
    * 
    * @param {Range} range - selected fragment
    */
-  surround(range) {}
+  surround(range) { }
 
   /**
    * move caret to end of current mention 
@@ -226,7 +227,7 @@ class Mention {
         for (let i = 0; i < el.childNodes.length; i++) {
           const node = el.childNodes[i];
 
-          if(node.id === this.CSS.mention) {
+          if (node.id === this.CSS.mention) {
             index = i;
           }
         }
