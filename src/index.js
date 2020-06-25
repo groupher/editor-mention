@@ -1,8 +1,4 @@
-/**
- * Build styles
- */
 import { make, debounce } from '@groupher/editor-utils'
-
 import './index.css'
 
 /**
