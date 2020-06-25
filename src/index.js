@@ -2,36 +2,15 @@
  * Build styles
  */
 
-require('./index.css').toString()
-
-function debounce(func, wait, immediate) {
-  var timeout;
-
-  return function executedFunction() {
-    var context = this;
-    var args = arguments;
-
-    var later = function () {
-      timeout = null;
-      if (!immediate) func.apply(context, args);
-    };
-
-    var callNow = immediate && !timeout;
-
-    clearTimeout(timeout);
-
-    timeout = setTimeout(later, wait);
-
-    if (callNow) func.apply(context, args);
-  };
-};
+import { make, debounce } from "@groupher/editor-utils";
+import "./index.css";
 
 /**
  * Mention Tool for the Editor.js
  *
  * Allows to wrap inline fragment and style it somehow.
  */
-class Mention {
+export default class Mention {
   /**
    * Specifies Tool as Inline Toolbar Tool
    *
@@ -53,19 +32,19 @@ class Mention {
      */
 
     this.CSS = {
-      mentionToolbarBlock: 'cdx-mention-toolbar-block',
-      mentionContainer: 'cdx-mention__container',
-      mentionInput: 'cdx-mention__input',
-      mention: 'cdx-mention',
-      mentionIntro: 'cdx-mention-suggestion__intro',
-      mentionAvatar: 'cdx-mention-suggestion__avatar',
-      mentionTitle: 'cdx-mention-suggestion__title',
-      mentionDesc: 'cdx-mention-suggestion__desc',
-      suggestionContainer: 'cdx-mention-suggestion-container',
-      suggestion: 'cdx-mention-suggestion',
-      inlineToolBar: 'ce-inline-toolbar',
-      inlineToolBarOpen: 'ce-inline-toolbar--showed',
-      inlineToolbarButtons: 'ce-inline-toolbar__buttons'
+      mentionToolbarBlock: "cdx-mention-toolbar-block",
+      mentionContainer: "cdx-mention__container",
+      mentionInput: "cdx-mention__input",
+      mention: "cdx-mention",
+      mentionIntro: "cdx-mention-suggestion__intro",
+      mentionAvatar: "cdx-mention-suggestion__avatar",
+      mentionTitle: "cdx-mention-suggestion__title",
+      mentionDesc: "cdx-mention-suggestion__desc",
+      suggestionContainer: "cdx-mention-suggestion-container",
+      suggestion: "cdx-mention-suggestion",
+      inlineToolBar: "ce-inline-toolbar",
+      inlineToolBarOpen: "ce-inline-toolbar--showed",
+      inlineToolbarButtons: "ce-inline-toolbar__buttons",
     };
 
     /**
@@ -73,46 +52,64 @@ class Mention {
      */
     this.iconClasses = {
       base: this.api.styles.inlineToolButton,
-      active: this.api.styles.inlineToolButtonActive
+      active: this.api.styles.inlineToolButtonActive,
     };
 
-    this.mentionContainer = this._make('div', [this.CSS.mentionContainer], {});
-    this.suggestionContainer = this._make('div', [this.CSS.suggestionContainer], {});
+    this.mentionContainer = make("div", [this.CSS.mentionContainer], {});
+    this.suggestionContainer = make("div", [this.CSS.suggestionContainer], {});
 
-    this.mentionInput = this._make('input', [this.CSS.mentionInput], {
-      innerHTML: '你想 @ 谁?',
-      autofocus: true
+    this.mentionInput = make("input", [this.CSS.mentionInput], {
+      innerHTML: "你想 @ 谁?",
+      autofocus: true,
+    });
+
+    /**
+     * should clear anchors after user manually click outside the popover,
+     * otherwise will confuse the next insert
+     *
+     * 用户手动点击其他位置造成失焦以后，如果没有输入的话需要清理 anchors，
+     * 否则会造成下次插入 mention 的时候定位异常
+     *
+     * @return {void}
+     */
+    this.mentionInput.addEventListener("blur", () => {
+      if (this.mentionInput.value.trim() === "") {
+        this.closeMentionPopover();
+      }
     });
 
     this.mentionContainer.appendChild(this.mentionInput);
     this.mentionContainer.appendChild(this.suggestionContainer);
 
-    this.mentionInput.addEventListener('keyup', debounce(this.handleMentionInput.bind(this), 300));
+    this.mentionInput.addEventListener(
+      "keyup",
+      debounce(this.handleMentionInput.bind(this), 300)
+    );
   }
 
   /**
    * handle mention input
    *
    * @return {void}
-  */
+   */
   handleMentionInput(ev) {
-    if (ev.code === 'Escape') return this.closeMentionPopover();
-    if (ev.code === "Enter") return console.log("select first item")
+    if (ev.code === "Escape") return this.closeMentionPopover();
+    if (ev.code === "Enter") return console.log("select first item");
 
-    console.log('ev: ', ev.code)
+    console.log("ev: ", ev.code);
 
     const user = {
       id: 1,
-      title: 'mydaerxym',
-      desc: 'author of the ..',
-      avatar: 'https://avatars0.githubusercontent.com/u/6184465?s=40&v=4'
+      title: "mydaerxym",
+      desc: "author of the ..",
+      avatar: "https://avatars0.githubusercontent.com/u/6184465?s=40&v=4",
     };
 
     const user2 = {
       id: 2,
-      title: 'mydaerxym2',
-      desc: 'author of the ..',
-      avatar: 'https://avatars0.githubusercontent.com/u/6184465?s=40&v=4'
+      title: "mydaerxym2",
+      desc: "author of the ..",
+      avatar: "https://avatars0.githubusercontent.com/u/6184465?s=40&v=4",
     };
 
     const suggestion = this.makeSuggestion(user);
@@ -126,21 +123,21 @@ class Mention {
    * generate suggestion block
    *
    * @return {HTMLElement}
-  */
+   */
   makeSuggestion(user) {
-    const mention = document.querySelector('#' + this.CSS.mention);
-    const suggestionWrapper = this._make('div', [this.CSS.suggestion], {});
+    const mention = document.querySelector("#" + this.CSS.mention);
+    const suggestionWrapper = make("div", [this.CSS.suggestion], {});
 
-    const avatar = this._make('img', [this.CSS.mentionAvatar], {
-      src: user.avatar
+    const avatar = make("img", [this.CSS.mentionAvatar], {
+      src: user.avatar,
     });
 
-    const intro = this._make('div', [this.CSS.mentionIntro], {});
-    const title = this._make('div', [this.CSS.mentionTitle], {
-      innerText: user.title
+    const intro = make("div", [this.CSS.mentionIntro], {});
+    const title = make("div", [this.CSS.mentionTitle], {
+      innerText: user.title,
     });
-    const desc = this._make('div', [this.CSS.mentionDesc], {
-      innerText: user.desc
+    const desc = make("div", [this.CSS.mentionDesc], {
+      innerText: user.desc,
     });
 
     suggestionWrapper.appendChild(avatar);
@@ -148,12 +145,10 @@ class Mention {
     intro.appendChild(desc);
     suggestionWrapper.appendChild(intro);
 
-    suggestionWrapper.addEventListener('click', () => {
-      console.log('click user: ', user);
+    suggestionWrapper.addEventListener("click", () => {
       mention.innerHTML = user.title;
       this.closeMentionPopover();
     });
-
     // https://avatars0.githubusercontent.com/u/6184465?s=40&v=4
 
     return suggestionWrapper;
@@ -166,12 +161,12 @@ class Mention {
    */
   closeMentionPopover() {
     this.clearSuggestions();
-    const mention = document.querySelector('#' + this.CSS.mention);
-    const inlineToolBar = document.querySelector('.' + this.CSS.inlineToolBar);
+    const mention = document.querySelector("#" + this.CSS.mention);
+    const inlineToolBar = document.querySelector("." + this.CSS.inlineToolBar);
 
     // empty the mention input
-    console.log('this.mentionInput: ', this.mentionInput);
-    this.mentionInput.value = '';
+    console.log("this.mentionInput: ", this.mentionInput);
+    this.mentionInput.value = "";
 
     // this.api.toolbar.close is not work
     // so close the toolbar by remove the optn class mannully
@@ -190,25 +185,25 @@ class Mention {
    * Create button element for Toolbar
    * @ should not visible in toolbar, so return an empty div
    * @return {HTMLElement}
-  */
+   */
   render() {
-    const emptyDiv = this._make('div', [this.CSS.mentionToolbarBlock], {});
+    const emptyDiv = make("div", [this.CSS.mentionToolbarBlock], {});
 
     return emptyDiv;
   }
 
   /**
    * NOTE:  inline tool must have this method
-   * 
+   *
    * @param {Range} range - selected fragment
    */
-  surround(range) { }
+  surround(range) {}
 
   /**
-   * move caret to end of current mention 
+   * move caret to end of current mention
    * @return {void}
    * @private
-  */
+   */
   moveCaretToMentionEnd() {
     var sel, range;
 
@@ -220,7 +215,8 @@ class Mention {
         // var textNode = sel.focusNode;
         // debugger;
         // var textNode = sel.anchorNode.parentNode; // sel.focusNode;
-        const el = document.querySelector('.ce-paragraph');
+        // TODO:  make more general, use getCurrentIndex staff
+        const el = document.querySelector(".ce-paragraph");
 
         let index = 0;
 
@@ -246,10 +242,7 @@ class Mention {
    * Check and change Term's state for current selection
    */
   checkState() {
-    const termTag = this.api.selection.findParentTag(
-      'SPAN',
-      this.CSS.mention
-    );
+    const termTag = this.api.selection.findParentTag("SPAN", this.CSS.mention);
     // const termTag = this.api.selection.findParentTag(this.tag);
 
     if (termTag && termTag.id === this.CSS.mention) {
@@ -262,15 +255,15 @@ class Mention {
     // console.log('showActions');
     this.mentionContainer.hidden = true;
     let inlineButtons = document.querySelector(
-      '.' + this.CSS.inlineToolbarButtons
+      "." + this.CSS.inlineToolbarButtons
     );
 
-    inlineButtons.style.display = 'block';
+    inlineButtons.style.display = "block";
   }
 
   // clear suggestions list
   clearSuggestions() {
-    const node = document.querySelector('.' + this.CSS.suggestionContainer);
+    const node = document.querySelector("." + this.CSS.suggestionContainer);
 
     while (node.firstChild) {
       node.removeChild(node.firstChild);
@@ -280,9 +273,9 @@ class Mention {
   // 删除所有 mention-holder 的 id， 因为 closeMentionPopover 无法处理失焦后
   // 自动隐藏的情况
   removeAllHolderIds() {
-    const holders = document.querySelectorAll('.' + this.CSS.mention);
+    const holders = document.querySelectorAll("." + this.CSS.mention);
 
-    holders.forEach(item => item.removeAttribute('id'));
+    holders.forEach((item) => item.removeAttribute("id"));
 
     return false;
   }
@@ -293,18 +286,18 @@ class Mention {
    *
    */
   handleMentionActions() {
-    console.log('handleMentionActions');
+    console.log("handleMentionActions");
     this.mentionContainer.hidden = false;
 
     this.clearSuggestions();
     // this.removeAllHolderIds();
-    this.mentionInput.value = '';
+    this.mentionInput.value = "";
 
     let inlineButtons = document.querySelector(
-      '.' + this.CSS.inlineToolbarButtons
+      "." + this.CSS.inlineToolbarButtons
     );
 
-    inlineButtons.style.display = 'none';
+    inlineButtons.style.display = "none";
 
     setTimeout(() => {
       this.mentionInput.focus();
@@ -312,7 +305,7 @@ class Mention {
   }
 
   renderActions() {
-    this.mentionInput.placeholder = '你想 @ 谁?';
+    this.mentionInput.placeholder = "你想 @ 谁?";
 
     return this.mentionContainer;
   }
@@ -332,26 +325,8 @@ class Mention {
   static get sanitize() {
     return {
       mention: {
-        class: this.CSS && this.CSS.mention
-      }
+        class: this.CSS && this.CSS.mention,
+      },
     };
   }
-
-  _make(tagName, classNames = null, attributes = {}) {
-    let el = document.createElement(tagName);
-
-    if (Array.isArray(classNames)) {
-      el.classList.add(...classNames);
-    } else if (classNames) {
-      el.classList.add(classNames);
-    }
-
-    for (let attrName in attributes) {
-      el[attrName] = attributes[attrName];
-    }
-
-    return el;
-  }
 }
-
-module.exports = Mention
