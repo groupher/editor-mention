@@ -1,9 +1,9 @@
 /**
  * Build styles
  */
+import { make, debounce } from '@groupher/editor-utils'
 
-import { make, debounce } from "@groupher/editor-utils";
-import "./index.css";
+import './index.css'
 
 /**
  * Mention Tool for the Editor.js
@@ -17,14 +17,14 @@ export default class Mention {
    * @return {boolean}
    */
   static get isInline() {
-    return true;
+    return true
   }
 
   /**
    * @param {{api: object}}  - Editor.js API
    */
   constructor({ api }) {
-    this.api = api;
+    this.api = api
     /**
      * Tag represented the term
      *
@@ -32,20 +32,20 @@ export default class Mention {
      */
 
     this.CSS = {
-      mentionToolbarBlock: "cdx-mention-toolbar-block",
-      mentionContainer: "cdx-mention__container",
-      mentionInput: "cdx-mention__input",
-      mention: "cdx-mention",
-      mentionIntro: "cdx-mention-suggestion__intro",
-      mentionAvatar: "cdx-mention-suggestion__avatar",
-      mentionTitle: "cdx-mention-suggestion__title",
-      mentionDesc: "cdx-mention-suggestion__desc",
-      suggestionContainer: "cdx-mention-suggestion-container",
-      suggestion: "cdx-mention-suggestion",
-      inlineToolBar: "ce-inline-toolbar",
-      inlineToolBarOpen: "ce-inline-toolbar--showed",
-      inlineToolbarButtons: "ce-inline-toolbar__buttons",
-    };
+      mentionToolbarBlock: 'cdx-mention-toolbar-block',
+      mentionContainer: 'cdx-mention__container',
+      mentionInput: 'cdx-mention__input',
+      mention: 'cdx-mention',
+      mentionIntro: 'cdx-mention-suggestion__intro',
+      mentionAvatar: 'cdx-mention-suggestion__avatar',
+      mentionTitle: 'cdx-mention-suggestion__title',
+      mentionDesc: 'cdx-mention-suggestion__desc',
+      suggestionContainer: 'cdx-mention-suggestion-container',
+      suggestion: 'cdx-mention-suggestion',
+      inlineToolBar: 'ce-inline-toolbar',
+      inlineToolBarOpen: 'ce-inline-toolbar--showed',
+      inlineToolbarButtons: 'ce-inline-toolbar__buttons',
+    }
 
     /**
      * CSS classes
@@ -53,15 +53,15 @@ export default class Mention {
     this.iconClasses = {
       base: this.api.styles.inlineToolButton,
       active: this.api.styles.inlineToolButtonActive,
-    };
+    }
 
-    this.mentionContainer = make("div", [this.CSS.mentionContainer], {});
-    this.suggestionContainer = make("div", [this.CSS.suggestionContainer], {});
+    this.mentionContainer = make('div', [this.CSS.mentionContainer], {})
+    this.suggestionContainer = make('div', [this.CSS.suggestionContainer], {})
 
-    this.mentionInput = make("input", [this.CSS.mentionInput], {
-      innerHTML: "你想 @ 谁?",
+    this.mentionInput = make('input', [this.CSS.mentionInput], {
+      innerHTML: '你想 @ 谁?',
       autofocus: true,
-    });
+    })
 
     /**
      * should clear anchors after user manually click outside the popover,
@@ -72,19 +72,19 @@ export default class Mention {
      *
      * @return {void}
      */
-    this.mentionInput.addEventListener("blur", () => {
-      if (this.mentionInput.value.trim() === "") {
-        this.closeMentionPopover();
+    this.mentionInput.addEventListener('blur', () => {
+      if (this.mentionInput.value.trim() === '') {
+        this.closeMentionPopover()
       }
-    });
+    })
 
-    this.mentionContainer.appendChild(this.mentionInput);
-    this.mentionContainer.appendChild(this.suggestionContainer);
+    this.mentionContainer.appendChild(this.mentionInput)
+    this.mentionContainer.appendChild(this.suggestionContainer)
 
     this.mentionInput.addEventListener(
-      "keyup",
-      debounce(this.handleMentionInput.bind(this), 300)
-    );
+      'keyup',
+      debounce(this.handleMentionInput.bind(this), 300),
+    )
   }
 
   /**
@@ -93,30 +93,30 @@ export default class Mention {
    * @return {void}
    */
   handleMentionInput(ev) {
-    if (ev.code === "Escape") return this.closeMentionPopover();
-    if (ev.code === "Enter") return console.log("select first item");
+    if (ev.code === 'Escape') return this.closeMentionPopover()
+    if (ev.code === 'Enter') return console.log('select first item')
 
-    console.log("ev: ", ev.code);
+    console.log('ev: ', ev.code)
 
     const user = {
       id: 1,
-      title: "mydaerxym",
-      desc: "author of the ..",
-      avatar: "https://avatars0.githubusercontent.com/u/6184465?s=40&v=4",
-    };
+      title: 'mydaerxym',
+      desc: 'author of the ..',
+      avatar: 'https://avatars0.githubusercontent.com/u/6184465?s=40&v=4',
+    }
 
     const user2 = {
       id: 2,
-      title: "mydaerxym2",
-      desc: "author of the ..",
-      avatar: "https://avatars0.githubusercontent.com/u/6184465?s=40&v=4",
-    };
+      title: 'mydaerxym2',
+      desc: 'author of the ..',
+      avatar: 'https://avatars0.githubusercontent.com/u/6184465?s=40&v=4',
+    }
 
-    const suggestion = this.makeSuggestion(user);
-    const suggestion2 = this.makeSuggestion(user2);
+    const suggestion = this.makeSuggestion(user)
+    const suggestion2 = this.makeSuggestion(user2)
 
-    this.suggestionContainer.appendChild(suggestion);
-    this.suggestionContainer.appendChild(suggestion2);
+    this.suggestionContainer.appendChild(suggestion)
+    this.suggestionContainer.appendChild(suggestion2)
   }
 
   /**
@@ -125,33 +125,33 @@ export default class Mention {
    * @return {HTMLElement}
    */
   makeSuggestion(user) {
-    const mention = document.querySelector("#" + this.CSS.mention);
-    const suggestionWrapper = make("div", [this.CSS.suggestion], {});
+    const mention = document.querySelector('#' + this.CSS.mention)
+    const suggestionWrapper = make('div', [this.CSS.suggestion], {})
 
-    const avatar = make("img", [this.CSS.mentionAvatar], {
+    const avatar = make('img', [this.CSS.mentionAvatar], {
       src: user.avatar,
-    });
+    })
 
-    const intro = make("div", [this.CSS.mentionIntro], {});
-    const title = make("div", [this.CSS.mentionTitle], {
+    const intro = make('div', [this.CSS.mentionIntro], {})
+    const title = make('div', [this.CSS.mentionTitle], {
       innerText: user.title,
-    });
-    const desc = make("div", [this.CSS.mentionDesc], {
+    })
+    const desc = make('div', [this.CSS.mentionDesc], {
       innerText: user.desc,
-    });
+    })
 
-    suggestionWrapper.appendChild(avatar);
-    intro.appendChild(title);
-    intro.appendChild(desc);
-    suggestionWrapper.appendChild(intro);
+    suggestionWrapper.appendChild(avatar)
+    intro.appendChild(title)
+    intro.appendChild(desc)
+    suggestionWrapper.appendChild(intro)
 
-    suggestionWrapper.addEventListener("click", () => {
-      mention.innerHTML = user.title;
-      this.closeMentionPopover();
-    });
+    suggestionWrapper.addEventListener('click', () => {
+      mention.innerHTML = user.title
+      this.closeMentionPopover()
+    })
     // https://avatars0.githubusercontent.com/u/6184465?s=40&v=4
 
-    return suggestionWrapper;
+    return suggestionWrapper
   }
 
   /**
@@ -160,25 +160,25 @@ export default class Mention {
    * @return {void}
    */
   closeMentionPopover() {
-    this.clearSuggestions();
-    const mention = document.querySelector("#" + this.CSS.mention);
-    const inlineToolBar = document.querySelector("." + this.CSS.inlineToolBar);
+    this.clearSuggestions()
+    const mention = document.querySelector('#' + this.CSS.mention)
+    const inlineToolBar = document.querySelector('.' + this.CSS.inlineToolBar)
 
     // empty the mention input
-    console.log("this.mentionInput: ", this.mentionInput);
-    this.mentionInput.value = "";
+    console.log('this.mentionInput: ', this.mentionInput)
+    this.mentionInput.value = ''
 
     // this.api.toolbar.close is not work
     // so close the toolbar by remove the optn class mannully
-    inlineToolBar.classList.remove(this.CSS.inlineToolBarOpen);
+    inlineToolBar.classList.remove(this.CSS.inlineToolBarOpen)
     // console.log('before focus: ', mention);
-    mention.focus();
-    this.moveCaretToMentionEnd();
+    mention.focus()
+    this.moveCaretToMentionEnd()
     // mention holder id should be uniq
     // 在 moveCaret 定位以后才可以删除，否则定位会失败
     setTimeout(() => {
-      this.removeAllHolderIds();
-    }, 50);
+      this.removeAllHolderIds()
+    }, 50)
   }
 
   /**
@@ -187,9 +187,9 @@ export default class Mention {
    * @return {HTMLElement}
    */
   render() {
-    const emptyDiv = make("div", [this.CSS.mentionToolbarBlock], {});
+    const emptyDiv = make('div', [this.CSS.mentionToolbarBlock], {})
 
-    return emptyDiv;
+    return emptyDiv
   }
 
   /**
@@ -205,35 +205,35 @@ export default class Mention {
    * @private
    */
   moveCaretToMentionEnd() {
-    var sel, range;
+    var sel, range
 
     if (window.getSelection) {
-      sel = window.getSelection();
-      range = document.createRange();
+      sel = window.getSelection()
+      range = document.createRange()
 
       if (sel.rangeCount > 0) {
         // var textNode = sel.focusNode;
         // debugger;
         // var textNode = sel.anchorNode.parentNode; // sel.focusNode;
         // TODO:  make more general, use getCurrentIndex staff
-        const el = document.querySelector(".ce-paragraph");
+        const el = document.querySelector('.ce-paragraph')
 
-        let index = 0;
+        let index = 0
 
         for (let i = 0; i < el.childNodes.length; i++) {
-          const node = el.childNodes[i];
+          const node = el.childNodes[i]
 
           if (node.id === this.CSS.mention) {
-            index = i;
+            index = i
           }
         }
 
         // console.log('find index: ', index);
-        range.setStart(el.childNodes[index + 2], 0);
-        range.collapse(true);
-        sel.removeAllRanges();
-        sel.addRange(range);
-        el.focus();
+        range.setStart(el.childNodes[index + 2], 0)
+        range.collapse(true)
+        sel.removeAllRanges()
+        sel.addRange(range)
+        el.focus()
       }
     }
   }
@@ -242,42 +242,42 @@ export default class Mention {
    * Check and change Term's state for current selection
    */
   checkState() {
-    const termTag = this.api.selection.findParentTag("SPAN", this.CSS.mention);
+    const termTag = this.api.selection.findParentTag('SPAN', this.CSS.mention)
     // const termTag = this.api.selection.findParentTag(this.tag);
 
     if (termTag && termTag.id === this.CSS.mention) {
-      return this.handleMentionActions();
+      return this.handleMentionActions()
     }
-    return this.handleNormalActions();
+    return this.handleNormalActions()
   }
 
   handleNormalActions() {
     // console.log('showActions');
-    this.mentionContainer.hidden = true;
+    this.mentionContainer.hidden = true
     let inlineButtons = document.querySelector(
-      "." + this.CSS.inlineToolbarButtons
-    );
+      '.' + this.CSS.inlineToolbarButtons,
+    )
 
-    inlineButtons.style.display = "block";
+    inlineButtons.style.display = 'block'
   }
 
   // clear suggestions list
   clearSuggestions() {
-    const node = document.querySelector("." + this.CSS.suggestionContainer);
+    const node = document.querySelector('.' + this.CSS.suggestionContainer)
 
     while (node.firstChild) {
-      node.removeChild(node.firstChild);
+      node.removeChild(node.firstChild)
     }
   }
 
   // 删除所有 mention-holder 的 id， 因为 closeMentionPopover 无法处理失焦后
   // 自动隐藏的情况
   removeAllHolderIds() {
-    const holders = document.querySelectorAll("." + this.CSS.mention);
+    const holders = document.querySelectorAll('.' + this.CSS.mention)
 
-    holders.forEach((item) => item.removeAttribute("id"));
+    holders.forEach((item) => item.removeAttribute('id'))
 
-    return false;
+    return false
   }
 
   /**
@@ -286,28 +286,28 @@ export default class Mention {
    *
    */
   handleMentionActions() {
-    console.log("handleMentionActions");
-    this.mentionContainer.hidden = false;
+    console.log('handleMentionActions')
+    this.mentionContainer.hidden = false
 
-    this.clearSuggestions();
+    this.clearSuggestions()
     // this.removeAllHolderIds();
-    this.mentionInput.value = "";
+    this.mentionInput.value = ''
 
     let inlineButtons = document.querySelector(
-      "." + this.CSS.inlineToolbarButtons
-    );
+      '.' + this.CSS.inlineToolbarButtons,
+    )
 
-    inlineButtons.style.display = "none";
+    inlineButtons.style.display = 'none'
 
     setTimeout(() => {
-      this.mentionInput.focus();
-    }, 100);
+      this.mentionInput.focus()
+    }, 100)
   }
 
   renderActions() {
-    this.mentionInput.placeholder = "你想 @ 谁?";
+    this.mentionInput.placeholder = '你想 @ 谁?'
 
-    return this.mentionContainer;
+    return this.mentionContainer
   }
 
   /**
@@ -315,7 +315,7 @@ export default class Mention {
    * @return {string}
    */
   get toolboxIcon() {
-    return '<svg width="34" height="34" xmlns="http://www.w3.org/2000/svg"><path d="M17.78 19.543l3.085 1.78-.825 1.499-1.04-.033-1.03 1.784h-2.075l1.575-2.73-.537-.82.848-1.48zm.578-1.007l3.83-6.687a1.688 1.688 0 0 1 2.303-.626l.003.002a1.725 1.725 0 0 1 .65 2.327l-3.719 6.755-3.067-1.771zm-8.17 3.665h3.662a1.187 1.187 0 0 1 0 2.374h-3.663a1.187 1.187 0 1 1 0-2.374z"/></svg>';
+    return '<svg width="34" height="34" xmlns="http://www.w3.org/2000/svg"><path d="M17.78 19.543l3.085 1.78-.825 1.499-1.04-.033-1.03 1.784h-2.075l1.575-2.73-.537-.82.848-1.48zm.578-1.007l3.83-6.687a1.688 1.688 0 0 1 2.303-.626l.003.002a1.725 1.725 0 0 1 .65 2.327l-3.719 6.755-3.067-1.771zm-8.17 3.665h3.662a1.187 1.187 0 0 1 0 2.374h-3.663a1.187 1.187 0 1 1 0-2.374z"/></svg>'
   }
 
   /**
@@ -327,6 +327,6 @@ export default class Mention {
       mention: {
         class: this.CSS && this.CSS.mention,
       },
-    };
+    }
   }
 }
