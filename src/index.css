@@ -8,21 +8,20 @@
   outline: none;
 }
 .cdx-mention::before {
-  content: 'a';
-  background: #1785a9;
-  color: white;
-  width: 14px;
-  height: 14px;
+  content: "a";
+  border: 1px solid #1785a9;
+  color: #1785a9;
+  width: 12px;
+  height: 12px;
   margin-right: 2px;
   border-radius: 100%;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   font-size: 16px;
-  transform: rotateZ(20deg);
+  transform: rotateZ(10deg);
   padding-bottom: 2px;
   font-family: serif;
-  font-weight: bolder;
 }
 .cdx-mention__container {
   padding: 5px;
@@ -35,20 +34,20 @@
   padding: 5px;
   font-variant: tabular-nums;
   list-style: none;
-  font-feature-settings: 'tnum';
+  font-feature-settings: "tnum";
   position: relative;
   display: inline-block;
   width: 150px;
   height: 26px;
-  color: rgba(0,0,0,0.65);
+  color: rgba(0, 0, 0, 0.65);
   font-size: 14px;
   line-height: 1.2;
   background-color: #f1f3f7;
   background-image: none;
   border: 1px solid #eaeaea;
   border-radius: 4px;
-  -webkit-transition: all .3s;
-  transition: all .3s;
+  -webkit-transition: all 0.3s;
+  transition: all 0.3s;
 }
 
 .cdx-mention-suggestion-container {
@@ -70,12 +69,12 @@
 }
 
 .cdx-mention-suggestion:first-child {
-  background: #F1F3F7;
+  background: #f1f3f7;
   opacity: 0.9;
 }
 
 .cdx-mention-suggestion:hover {
-  background: #F1F3F7;
+  background: #f1f3f7;
 }
 
 .cdx-mention-suggestion__avatar {
