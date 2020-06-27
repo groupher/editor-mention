@@ -161,15 +161,17 @@ export default class Mention {
     const inlineToolBar = document.querySelector('.' + this.CSS.inlineToolBar)
 
     // empty the mention input
-    console.log('this.mentionInput: ', this.mentionInput)
     this.mentionInput.value = ''
 
     // this.api.toolbar.close is not work
     // so close the toolbar by remove the optn class mannully
     inlineToolBar.classList.remove(this.CSS.inlineToolBarOpen)
     // console.log('before focus: ', mention);
-    mention.focus()
-    this.moveCaretToMentionEnd()
+    if (mention) {
+      console.log('bebore focus: ', mention)
+      mention.focus()
+    }
+    // this.moveCaretToMentionEnd()
     // mention holder id should be uniq
     // 在 moveCaret 定位以后才可以删除，否则定位会失败
     setTimeout(() => {
@@ -213,6 +215,7 @@ export default class Mention {
         // var textNode = sel.anchorNode.parentNode; // sel.focusNode;
         // TODO:  make more general, use getCurrentIndex staff
         const el = document.querySelector('.ce-paragraph')
+        if (!el) return
 
         let index = 0
 
@@ -278,11 +281,9 @@ export default class Mention {
 
   /**
    * show mention suggestions, hide normal actions like bold, italic etc...inline-toolbar buttons
-   * 隐藏正常的 粗体，斜体等等 inline-toolbar 按钮
-   *
+   * 隐藏正常的 粗体，斜体等等 inline-toolbar 按钮，这里是借用了自带 popover 的一个 hack
    */
   handleMentionActions() {
-    console.log('handleMentionActions')
     this.mentionContainer.hidden = false
 
     this.clearSuggestions()
