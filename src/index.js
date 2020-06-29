@@ -21,6 +21,7 @@ export default class Mention {
    */
   constructor({ api }) {
     this.api = api
+    this.tag = 'span'
     /**
      * Tag represented the term
      *
@@ -28,6 +29,9 @@ export default class Mention {
      */
 
     this.CSS = {
+      // TODO:  move to utils
+      focusHolder: 'focus-older',
+      mention: 'cdx-mention',
       mentionToolbarBlock: 'cdx-mention-toolbar-block',
       mentionContainer: 'cdx-mention__container',
       mentionInput: 'cdx-mention__input',
@@ -70,7 +74,7 @@ export default class Mention {
      */
     this.mentionInput.addEventListener('blur', () => {
       if (this.mentionInput.value.trim() === '') {
-        this.closeMentionPopover()
+        // this.closeMentionPopover()
       }
     })
 
@@ -142,9 +146,19 @@ export default class Mention {
     suggestionWrapper.appendChild(intro)
 
     suggestionWrapper.addEventListener('click', () => {
+      this.mentionInput.value = user.title
       mention.innerHTML = user.title
+      const mentionCursorHolder = make('span', this.CSS.focusHolder)
+      mention.parentNode.insertBefore(mentionCursorHolder, mention.nextSibling)
+
+      // console.log("--> mention click before focus: ", mention)
+      mention.contenteditable = true
       this.closeMentionPopover()
+      this.moveCaretAtEnd(mention.nextElementSibling)
+      // it worked !
+      document.querySelector(`.${this.CSS.focusHolder}`).remove()
     })
+
     // https://avatars0.githubusercontent.com/u/6184465?s=40&v=4
 
     return suggestionWrapper
@@ -166,17 +180,37 @@ export default class Mention {
     // this.api.toolbar.close is not work
     // so close the toolbar by remove the optn class mannully
     inlineToolBar.classList.remove(this.CSS.inlineToolBarOpen)
-    // console.log('before focus: ', mention);
-    if (mention) {
-      console.log('bebore focus: ', mention)
-      mention.focus()
-    }
-    // this.moveCaretToMentionEnd()
+
     // mention holder id should be uniq
     // 在 moveCaret 定位以后才可以删除，否则定位会失败
     setTimeout(() => {
       this.removeAllHolderIds()
     }, 50)
+  }
+
+  /**
+   * move caret to end of current element
+   * @param {HTMLElement} el 
+   * @return {void}
+   * @private
+   */
+  // https://stackoverflow.com/questions/4233265/contenteditable-set-caret-at-the-end-of-the-text-cross-browser
+  moveCaretAtEnd(el) {
+    el.focus();
+    if (typeof window.getSelection != "undefined"
+      && typeof document.createRange != "undefined") {
+      var range = document.createRange();
+      range.selectNodeContents(el);
+      range.collapse(false);
+      var sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+    } else if (typeof document.body.createTextRange != "undefined") {
+      var textRange = document.body.createTextRange();
+      textRange.moveToElementText(el);
+      textRange.collapse(false);
+      textRange.select();
+    }
   }
 
   /**
@@ -195,63 +229,23 @@ export default class Mention {
    *
    * @param {Range} range - selected fragment
    */
-  surround(range) {}
-
-  /**
-   * move caret to end of current mention
-   * @return {void}
-   * @private
-   */
-  moveCaretToMentionEnd() {
-    var sel, range
-
-    if (window.getSelection) {
-      sel = window.getSelection()
-      range = document.createRange()
-
-      if (sel.rangeCount > 0) {
-        // var textNode = sel.focusNode;
-        // debugger;
-        // var textNode = sel.anchorNode.parentNode; // sel.focusNode;
-        // TODO:  make more general, use getCurrentIndex staff
-        const el = document.querySelector('.ce-paragraph')
-        if (!el) return
-
-        let index = 0
-
-        for (let i = 0; i < el.childNodes.length; i++) {
-          const node = el.childNodes[i]
-
-          if (node.id === this.CSS.mention) {
-            index = i
-          }
-        }
-
-        // console.log('find index: ', index);
-        range.setStart(el.childNodes[index + 2], 0)
-        range.collapse(true)
-        sel.removeAllRanges()
-        sel.addRange(range)
-        el.focus()
-      }
-    }
-  }
+  surround(range) { }
 
   /**
    * Check and change Term's state for current selection
    */
   checkState() {
-    const termTag = this.api.selection.findParentTag('SPAN', this.CSS.mention)
-    // const termTag = this.api.selection.findParentTag(this.tag);
+    // const termTag = this.api.selection.findParentTag(this.tag, this.CSS.mention)
 
-    if (termTag && termTag.id === this.CSS.mention) {
-      return this.handleMentionActions()
-    }
-    return this.handleNormalActions()
+    // if (termTag && termTag.id === this.CSS.mention) {
+    //   return this.handleMentionActions()
+    // }
+    // return this.handleNormalActions()
+
+    return this.handleMentionActions()
   }
 
   handleNormalActions() {
-    // console.log('showActions');
     this.mentionContainer.hidden = true
     let inlineButtons = document.querySelector(
       '.' + this.CSS.inlineToolbarButtons,
@@ -321,7 +315,7 @@ export default class Mention {
    */
   static get sanitize() {
     return {
-      mention: {
+      label: {
         class: this.CSS && this.CSS.mention,
       },
     }

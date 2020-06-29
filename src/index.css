@@ -6,6 +6,8 @@
   color: #1785a9;
   font-weight: bold;
   outline: none;
+  margin-left: 4px;
+  margin-right: 4px;
 }
 .cdx-mention::before {
   content: "@";
