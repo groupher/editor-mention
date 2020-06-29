@@ -708,9 +708,12 @@
     lodash "^4.17.13"
     to-fast-properties "^2.0.0"
 
-"@groupher/editor-utils@^0.1.17":
-  version "0.1.17"
-  resolved "https://registry.npm.taobao.org/@groupher/editor-utils/download/@groupher/editor-utils-0.1.17.tgz#4df7996f35ac037805638ca985b22a0d75e90f1e"
+"@groupher/editor-utils@0.1.45":
+  version "0.1.45"
+  resolved "https://registry.npm.taobao.org/@groupher/editor-utils/download/@groupher/editor-utils-0.1.45.tgz#41533ea4c2f46626d90a4cb266e2c21d1ae2cb9e"
+  dependencies:
+    debug "^4.1.1"
+    pubsub-js "^1.8.0"
 
 "@groupher/eslint-config-web@^2.0.9":
   version "2.0.9"
@@ -1612,7 +1615,7 @@ debug@^2.2.0, debug@^2.3.3, debug@^2.6.9:
   dependencies:
     ms "2.0.0"
 
-debug@^4.1.0:
+debug@^4.1.0, debug@^4.1.1:
   version "4.1.1"
   resolved "https://registry.npm.taobao.org/debug/download/debug-4.1.1.tgz#3b72260255109c6b589cee050f1d516139664791"
   dependencies:
@@ -3315,6 +3318,10 @@ public-encrypt@^4.0.0:
     parse-asn1 "^5.0.0"
     randombytes "^2.0.1"
     safe-buffer "^5.1.2"
+
+pubsub-js@^1.8.0:
+  version "1.8.0"
+  resolved "https://registry.npm.taobao.org/pubsub-js/download/pubsub-js-1.8.0.tgz#e2b523a030140a3d6e080735a48850a9622ed20a"
 
 pump@^2.0.0:
   version "2.0.1"

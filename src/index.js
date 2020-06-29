@@ -1,4 +1,4 @@
-import { make, debounce } from '@groupher/editor-utils'
+import { make, debounce, CSS, INLINE_BLOCK_TAG } from '@groupher/editor-utils'
 import './index.css'
 
 /**
@@ -21,7 +21,6 @@ export default class Mention {
    */
   constructor({ api }) {
     this.api = api
-    this.tag = 'span'
     /**
      * Tag represented the term
      *
@@ -29,13 +28,10 @@ export default class Mention {
      */
 
     this.CSS = {
-      // TODO:  move to utils
-      focusHolder: 'focus-older',
-      mention: 'cdx-mention',
+      mention: CSS.mention,
       mentionToolbarBlock: 'cdx-mention-toolbar-block',
       mentionContainer: 'cdx-mention__container',
       mentionInput: 'cdx-mention__input',
-      mention: 'cdx-mention',
       mentionIntro: 'cdx-mention-suggestion__intro',
       mentionAvatar: 'cdx-mention-suggestion__avatar',
       mentionTitle: 'cdx-mention-suggestion__title',
@@ -148,7 +144,7 @@ export default class Mention {
     suggestionWrapper.addEventListener('click', () => {
       this.mentionInput.value = user.title
       mention.innerHTML = user.title
-      const mentionCursorHolder = make('span', this.CSS.focusHolder)
+      const mentionCursorHolder = make('span', CSS.focusHolder)
       mention.parentNode.insertBefore(mentionCursorHolder, mention.nextSibling)
 
       // console.log("--> mention click before focus: ", mention)
@@ -156,7 +152,7 @@ export default class Mention {
       this.closeMentionPopover()
       this.moveCaretAtEnd(mention.nextElementSibling)
       // it worked !
-      document.querySelector(`.${this.CSS.focusHolder}`).remove()
+      document.querySelector(`.${CSS.focusHolder}`).remove()
     })
 
     // https://avatars0.githubusercontent.com/u/6184465?s=40&v=4
@@ -190,26 +186,28 @@ export default class Mention {
 
   /**
    * move caret to end of current element
-   * @param {HTMLElement} el 
+   * @param {HTMLElement} el
    * @return {void}
    * @private
    */
   // https://stackoverflow.com/questions/4233265/contenteditable-set-caret-at-the-end-of-the-text-cross-browser
   moveCaretAtEnd(el) {
-    el.focus();
-    if (typeof window.getSelection != "undefined"
-      && typeof document.createRange != "undefined") {
-      var range = document.createRange();
-      range.selectNodeContents(el);
-      range.collapse(false);
-      var sel = window.getSelection();
-      sel.removeAllRanges();
-      sel.addRange(range);
-    } else if (typeof document.body.createTextRange != "undefined") {
-      var textRange = document.body.createTextRange();
-      textRange.moveToElementText(el);
-      textRange.collapse(false);
-      textRange.select();
+    el.focus()
+    if (
+      typeof window.getSelection != 'undefined' &&
+      typeof document.createRange != 'undefined'
+    ) {
+      var range = document.createRange()
+      range.selectNodeContents(el)
+      range.collapse(false)
+      var sel = window.getSelection()
+      sel.removeAllRanges()
+      sel.addRange(range)
+    } else if (typeof document.body.createTextRange != 'undefined') {
+      var textRange = document.body.createTextRange()
+      textRange.moveToElementText(el)
+      textRange.collapse(false)
+      textRange.select()
     }
   }
 
@@ -229,19 +227,12 @@ export default class Mention {
    *
    * @param {Range} range - selected fragment
    */
-  surround(range) { }
+  surround(range) {}
 
   /**
    * Check and change Term's state for current selection
    */
   checkState() {
-    // const termTag = this.api.selection.findParentTag(this.tag, this.CSS.mention)
-
-    // if (termTag && termTag.id === this.CSS.mention) {
-    //   return this.handleMentionActions()
-    // }
-    // return this.handleNormalActions()
-
     return this.handleMentionActions()
   }
 
@@ -315,8 +306,8 @@ export default class Mention {
    */
   static get sanitize() {
     return {
-      label: {
-        class: this.CSS && this.CSS.mention,
+      [INLINE_BLOCK_TAG.mention]: {
+        class: CSS.mention,
       },
     }
   }
