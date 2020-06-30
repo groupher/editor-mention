@@ -1,4 +1,4 @@
-import { make, debounce, CSS, INLINE_BLOCK_TAG } from '@groupher/editor-utils'
+import { make, debounce, CSS, INLINE_BLOCK_TAG, moveCaretToEnd } from '@groupher/editor-utils'
 import './index.css'
 
 /**
@@ -150,7 +150,7 @@ export default class Mention {
       // console.log("--> mention click before focus: ", mention)
       mention.contenteditable = true
       this.closeMentionPopover()
-      this.moveCaretAtEnd(mention.nextElementSibling)
+      moveCaretToEnd(mention.nextElementSibling)
       // it worked !
       document.querySelector(`.${CSS.focusHolder}`).remove()
     })
@@ -185,33 +185,6 @@ export default class Mention {
   }
 
   /**
-   * move caret to end of current element
-   * @param {HTMLElement} el
-   * @return {void}
-   * @private
-   */
-  // https://stackoverflow.com/questions/4233265/contenteditable-set-caret-at-the-end-of-the-text-cross-browser
-  moveCaretAtEnd(el) {
-    el.focus()
-    if (
-      typeof window.getSelection != 'undefined' &&
-      typeof document.createRange != 'undefined'
-    ) {
-      var range = document.createRange()
-      range.selectNodeContents(el)
-      range.collapse(false)
-      var sel = window.getSelection()
-      sel.removeAllRanges()
-      sel.addRange(range)
-    } else if (typeof document.body.createTextRange != 'undefined') {
-      var textRange = document.body.createTextRange()
-      textRange.moveToElementText(el)
-      textRange.collapse(false)
-      textRange.select()
-    }
-  }
-
-  /**
    * Create button element for Toolbar
    * @ should not visible in toolbar, so return an empty div
    * @return {HTMLElement}
@@ -227,7 +200,7 @@ export default class Mention {
    *
    * @param {Range} range - selected fragment
    */
-  surround(range) {}
+  surround(range) { }
 
   /**
    * Check and change Term's state for current selection
