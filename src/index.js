@@ -1,5 +1,10 @@
 import {
-  make, debounce, CSS, INLINE_BLOCK_TAG, moveCaretToEnd, keepCustomInlineToolOnly,
+  make,
+  debounce,
+  CSS,
+  INLINE_BLOCK_TAG,
+  moveCaretToEnd,
+  keepCustomInlineToolOnly,
   restoreDefaultInlineTools,
 } from '@groupher/editor-utils'
 import './index.css'
@@ -62,6 +67,18 @@ export default class Mention {
       autofocus: true,
     })
 
+    this.mentionInput.addEventListener('focus', () => {
+      const mention = document.querySelector('#' + this.CSS.mention)
+      console.log('focused', mention)
+
+      if (mention) {
+        const mentionCursorHolder = make('span', CSS.focusHolder)
+        mention.parentNode.insertBefore(
+          mentionCursorHolder,
+          mention.nextSibling,
+        )
+      }
+    })
     /**
      * should clear anchors after user manually click outside the popover,
      * otherwise will confuse the next insert
@@ -72,10 +89,15 @@ export default class Mention {
      * @return {void}
      */
     this.mentionInput.addEventListener('blur', () => {
+      this.selectionStateChecked = false
       if (this.mentionInput.value.trim() === '') {
-        // this.closeMentionPopover()
+        setTimeout(() => {
+          // this.removeAllHolderIds()
+          this.closePopover()
+        }, 50)
       }
     })
+    this.selectionStateChecked = false
 
     this.mentionContainer.appendChild(this.mentionInput)
     this.mentionContainer.appendChild(this.suggestionContainer)
@@ -92,10 +114,8 @@ export default class Mention {
    * @return {void}
    */
   handleMentionInput(ev) {
-    if (ev.code === 'Escape') return this.closeMentionPopover()
+    if (ev.code === 'Escape') return this.closePopover()
     if (ev.code === 'Enter') return console.log('select first item')
-
-    console.log('ev: ', ev.code)
 
     const user = {
       id: 1,
@@ -138,15 +158,10 @@ export default class Mention {
     suggestionWrapper.addEventListener('click', () => {
       this.mentionInput.value = user.title
       mention.innerHTML = user.title
-      const mentionCursorHolder = make('span', CSS.focusHolder)
-      mention.parentNode.insertBefore(mentionCursorHolder, mention.nextSibling)
-
-      // console.log("--> mention click before focus: ", mention)
+      // const mentionCursorHolder = make('span', CSS.focusHolder)
+      // mention.parentNode.insertBefore(mentionCursorHolder, mention.nextSibling)
       mention.contenteditable = true
-      this.closeMentionPopover()
-      moveCaretToEnd(mention.nextElementSibling)
-      // it worked !
-      document.querySelector(`.${CSS.focusHolder}`).remove()
+      this.closePopover()
     })
 
     // https://avatars0.githubusercontent.com/u/6184465?s=40&v=4
@@ -159,22 +174,27 @@ export default class Mention {
    *
    * @return {void}
    */
-  closeMentionPopover() {
-    this.clearSuggestions()
+  closePopover() {
     const mention = document.querySelector('#' + this.CSS.mention)
-    const inlineToolBar = document.querySelector('.' + this.CSS.inlineToolBar)
-
+    if (!mention) return
     // empty the mention input
     this.mentionInput.value = ''
+    this.clearSuggestions()
+
+    const inlineToolBar = document.querySelector('.' + this.CSS.inlineToolBar)
 
     // this.api.toolbar.close is not work
     // so close the toolbar by remove the optn class mannully
+    // this.api.toolbar.close()
     inlineToolBar.classList.remove(this.CSS.inlineToolBarOpen)
+
+    if (mention.nextElementSibling) moveCaretToEnd(mention.nextElementSibling)
 
     // mention holder id should be uniq
     // 在 moveCaret 定位以后才可以删除，否则定位会失败
     setTimeout(() => {
       this.removeAllHolderIds()
+      document.querySelector(`.${CSS.focusHolder}`).remove()
     }, 50)
   }
 
@@ -194,7 +214,7 @@ export default class Mention {
    *
    * @param {Range} range - selected fragment
    */
-  surround(range) { }
+  surround(range) {}
 
   setElementDisplayByClass(css, attr) {
     const el = document.querySelector(`.${css}`)
@@ -207,13 +227,19 @@ export default class Mention {
    * Check and change Term's state for current selection
    */
   checkState(termTag) {
-    if (!termTag || termTag.anchorNode.id !== CSS.mention) return
+    if (!termTag || termTag.anchorNode.id !== CSS.mention) {
+      this.selectionStateChecked = false
+      return restoreDefaultInlineTools()
+    }
+
+    if (this.selectionStateChecked) return
 
     if (termTag.anchorNode.id === CSS.mention) {
       return this.handleMentionActions()
     }
 
     // normal inline tools
+    this.selectionStateChecked = false
     return restoreDefaultInlineTools()
   }
 
@@ -222,19 +248,21 @@ export default class Mention {
    * 隐藏正常的 粗体，斜体等等 inline-toolbar 按钮，这里是借用了自带 popover 的一个 hack
    */
   handleMentionActions() {
+    this.selectionStateChecked = true
     keepCustomInlineToolOnly('mention')
 
     this.clearSuggestions()
-    // this.removeAllHolderIds();
     this.mentionInput.value = ''
 
     setTimeout(() => {
+      console.log('the fuck', this.mentionInput)
       this.mentionInput.focus()
     }, 100)
   }
 
   // clear suggestions list
   clearSuggestions() {
+    console.log('clearSuggestions')
     const node = document.querySelector('.' + this.CSS.suggestionContainer)
 
     while (node.firstChild) {
@@ -242,7 +270,7 @@ export default class Mention {
     }
   }
 
-  // 删除所有 mention-holder 的 id， 因为 closeMentionPopover 无法处理失焦后
+  // 删除所有 mention-holder 的 id， 因为 closePopover 无法处理失焦后
   // 自动隐藏的情况
   removeAllHolderIds() {
     const holders = document.querySelectorAll('.' + this.CSS.mention)
