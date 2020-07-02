@@ -1,4 +1,7 @@
-import { make, debounce, CSS, INLINE_BLOCK_TAG, moveCaretToEnd } from '@groupher/editor-utils'
+import {
+  make, debounce, CSS, INLINE_BLOCK_TAG, moveCaretToEnd, keepCustomInlineToolOnly,
+  restoreDefaultInlineTools,
+} from '@groupher/editor-utils'
 import './index.css'
 
 /**
@@ -101,18 +104,9 @@ export default class Mention {
       avatar: 'https://avatars0.githubusercontent.com/u/6184465?s=40&v=4',
     }
 
-    const user2 = {
-      id: 2,
-      title: 'mydaerxym2',
-      desc: 'author of the ..',
-      avatar: 'https://avatars0.githubusercontent.com/u/6184465?s=40&v=4',
-    }
-
     const suggestion = this.makeSuggestion(user)
-    const suggestion2 = this.makeSuggestion(user2)
 
     this.suggestionContainer.appendChild(suggestion)
-    this.suggestionContainer.appendChild(suggestion2)
   }
 
   /**
@@ -202,20 +196,41 @@ export default class Mention {
    */
   surround(range) { }
 
+  setElementDisplayByClass(css, attr) {
+    const el = document.querySelector(`.${css}`)
+    if (el) {
+      el.style.display = attr
+    }
+  }
+
   /**
    * Check and change Term's state for current selection
    */
-  checkState() {
-    return this.handleMentionActions()
+  checkState(termTag) {
+    if (!termTag || termTag.anchorNode.id !== CSS.mention) return
+
+    if (termTag.anchorNode.id === CSS.mention) {
+      return this.handleMentionActions()
+    }
+
+    // normal inline tools
+    return restoreDefaultInlineTools()
   }
 
-  handleNormalActions() {
-    this.mentionContainer.hidden = true
-    let inlineButtons = document.querySelector(
-      '.' + this.CSS.inlineToolbarButtons,
-    )
+  /**
+   * show mention suggestions, hide normal actions like bold, italic etc...inline-toolbar buttons
+   * 隐藏正常的 粗体，斜体等等 inline-toolbar 按钮，这里是借用了自带 popover 的一个 hack
+   */
+  handleMentionActions() {
+    keepCustomInlineToolOnly('mention')
 
-    inlineButtons.style.display = 'block'
+    this.clearSuggestions()
+    // this.removeAllHolderIds();
+    this.mentionInput.value = ''
+
+    setTimeout(() => {
+      this.mentionInput.focus()
+    }, 100)
   }
 
   // clear suggestions list
@@ -237,40 +252,10 @@ export default class Mention {
     return false
   }
 
-  /**
-   * show mention suggestions, hide normal actions like bold, italic etc...inline-toolbar buttons
-   * 隐藏正常的 粗体，斜体等等 inline-toolbar 按钮，这里是借用了自带 popover 的一个 hack
-   */
-  handleMentionActions() {
-    this.mentionContainer.hidden = false
-
-    this.clearSuggestions()
-    // this.removeAllHolderIds();
-    this.mentionInput.value = ''
-
-    let inlineButtons = document.querySelector(
-      '.' + this.CSS.inlineToolbarButtons,
-    )
-
-    inlineButtons.style.display = 'none'
-
-    setTimeout(() => {
-      this.mentionInput.focus()
-    }, 100)
-  }
-
   renderActions() {
     this.mentionInput.placeholder = '你想 @ 谁?'
 
     return this.mentionContainer
-  }
-
-  /**
-   * Get Tool icon's SVG
-   * @return {string}
-   */
-  get toolboxIcon() {
-    return '<svg width="34" height="34" xmlns="http://www.w3.org/2000/svg"><path d="M17.78 19.543l3.085 1.78-.825 1.499-1.04-.033-1.03 1.784h-2.075l1.575-2.73-.537-.82.848-1.48zm.578-1.007l3.83-6.687a1.688 1.688 0 0 1 2.303-.626l.003.002a1.725 1.725 0 0 1 .65 2.327l-3.719 6.755-3.067-1.771zm-8.17 3.665h3.662a1.187 1.187 0 0 1 0 2.374h-3.663a1.187 1.187 0 1 1 0-2.374z"/></svg>'
   }
 
   /**

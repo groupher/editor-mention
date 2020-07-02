@@ -708,10 +708,10 @@
     lodash "^4.17.13"
     to-fast-properties "^2.0.0"
 
-"@groupher/editor-utils@0.1.46":
-  version "0.1.46"
-  resolved "https://registry.yarnpkg.com/@groupher/editor-utils/-/editor-utils-0.1.46.tgz#cec91c48d1be79b6c57067ecf96e42171365d820"
-  integrity sha512-L9Nq8yTFZ3EGcTd7iCkJE/qWChP7rTpjMWBPDjez7PfouWO4u2y+tHAMD4ijbV4OLlDL78Qm7sVk923VaeA+dA==
+"@groupher/editor-utils@0.1.51":
+  version "0.1.51"
+  resolved "https://registry.yarnpkg.com/@groupher/editor-utils/-/editor-utils-0.1.51.tgz#196f774984b801e65e8c868cf7121578ee521a7d"
+  integrity sha512-5OttEPnrZQIEjYNbwsiehioom14oNoR9pMyAhe/gQ2Pt0QSze77+YEAH1W6uO5SFmifeb1UVwFLqQ4mElIysSQ==
   dependencies:
     debug "^4.1.1"
     pubsub-js "^1.8.0"
