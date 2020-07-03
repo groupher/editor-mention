@@ -708,10 +708,10 @@
     lodash "^4.17.13"
     to-fast-properties "^2.0.0"
 
-"@groupher/editor-utils@0.1.52":
-  version "0.1.52"
-  resolved "https://registry.yarnpkg.com/@groupher/editor-utils/-/editor-utils-0.1.52.tgz#811a3481cae173840a719c3df3fab40646cd5736"
-  integrity sha512-c6xhvQmCiReu1q1VjbDLTqEtCGsDyX1K87ehRoxkfsPdGE9cK7QG4HGBNqfeDejAnrvyWGa/wxDRuvTaaeCVkw==
+"@groupher/editor-utils@0.1.53":
+  version "0.1.53"
+  resolved "https://registry.yarnpkg.com/@groupher/editor-utils/-/editor-utils-0.1.53.tgz#ef235ee732892220bc0167b5790f29f9a115933b"
+  integrity sha512-LoDdJPfexSBlTLndzoVZas+o8LIBTO34+f+pmSJhYWM2M2Qml8A8AWGGo1+ZzOSVu28gww/IUt/LD7jJTWJ+dw==
   dependencies:
     debug "^4.1.1"
     pubsub-js "^1.8.0"
@@ -2847,7 +2847,8 @@ ms@2.0.0:
 
 ms@^2.1.1:
   version "2.1.2"
-  resolved "https://registry.npm.taobao.org/ms/download/ms-2.1.2.tgz#d09d1f357b443f493382a8eb3ccd183872ae6009"
+  resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.2.tgz#d09d1f357b443f493382a8eb3ccd183872ae6009"
+  integrity sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==
 
 multimatch@^4.0.0:
   version "4.0.0"
@@ -3322,7 +3323,8 @@ public-encrypt@^4.0.0:
 
 pubsub-js@^1.8.0:
   version "1.8.0"
-  resolved "https://registry.npm.taobao.org/pubsub-js/download/pubsub-js-1.8.0.tgz#e2b523a030140a3d6e080735a48850a9622ed20a"
+  resolved "https://registry.yarnpkg.com/pubsub-js/-/pubsub-js-1.8.0.tgz#e2b523a030140a3d6e080735a48850a9622ed20a"
+  integrity sha512-z/61CZMA+jaQpBU0QSWkC4w6lX3tPbOdtl1h2UWac4sn6dkWfx7ND75SsN6U0amczdI66PqfuXXD0Ad7tnbaQg==
 
 pump@^2.0.0:
   version "2.0.1"
