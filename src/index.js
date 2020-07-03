@@ -6,6 +6,7 @@ import {
   moveCaretToEnd,
   keepCustomInlineToolOnly,
   restoreDefaultInlineTools,
+  removeElementByClass,
 } from '@groupher/editor-utils'
 import './index.css'
 
@@ -90,12 +91,12 @@ export default class Mention {
      */
     this.mentionInput.addEventListener('blur', () => {
       this.selectionStateChecked = false
-      if (this.mentionInput.value.trim() === '') {
-        setTimeout(() => {
-          // this.removeAllHolderIds()
+      setTimeout(() => {
+        console.log("this.mentionInput on blur: ", this.mentionInput.value)
+        if (this.mentionInput.value.trim() === '') {
           this.closePopover()
-        }, 50)
-      }
+        }
+      }, 300)
     })
     this.selectionStateChecked = false
 
@@ -104,7 +105,7 @@ export default class Mention {
 
     this.mentionInput.addEventListener(
       'keyup',
-      debounce(this.handleMentionInput.bind(this), 300),
+      debounce(this.handleMentionInput.bind(this), 200),
     )
   }
 
@@ -158,9 +159,6 @@ export default class Mention {
     suggestionWrapper.addEventListener('click', () => {
       this.mentionInput.value = user.title
       mention.innerHTML = user.title
-      // const mentionCursorHolder = make('span', CSS.focusHolder)
-      // mention.parentNode.insertBefore(mentionCursorHolder, mention.nextSibling)
-      mention.contenteditable = true
       this.closePopover()
     })
 
@@ -177,24 +175,29 @@ export default class Mention {
   closePopover() {
     const mention = document.querySelector('#' + this.CSS.mention)
     if (!mention) return
+
     // empty the mention input
-    this.mentionInput.value = ''
+    // this.mentionInput.value = ''
     this.clearSuggestions()
 
     const inlineToolBar = document.querySelector('.' + this.CSS.inlineToolBar)
 
     // this.api.toolbar.close is not work
-    // so close the toolbar by remove the optn class mannully
+    // so close the toolbar by remove the open class manually
     // this.api.toolbar.close()
     inlineToolBar.classList.remove(this.CSS.inlineToolBarOpen)
 
-    if (mention.nextElementSibling) moveCaretToEnd(mention.nextElementSibling)
+    // moveCaretToEnd(mention.nextElementSibling)
+    if (mention.nextElementSibling) {
+      moveCaretToEnd(mention.nextElementSibling)
+    }
 
     // mention holder id should be uniq
     // 在 moveCaret 定位以后才可以删除，否则定位会失败
     setTimeout(() => {
       this.removeAllHolderIds()
-      document.querySelector(`.${CSS.focusHolder}`).remove()
+      removeElementByClass(CSS.focusHolder)
+      // document.querySelector(`.${CSS.focusHolder}`).remove()
     }, 50)
   }
 
@@ -214,14 +217,7 @@ export default class Mention {
    *
    * @param {Range} range - selected fragment
    */
-  surround(range) {}
-
-  setElementDisplayByClass(css, attr) {
-    const el = document.querySelector(`.${css}`)
-    if (el) {
-      el.style.display = attr
-    }
-  }
+  surround(range) { }
 
   /**
    * Check and change Term's state for current selection
@@ -255,7 +251,6 @@ export default class Mention {
     this.mentionInput.value = ''
 
     setTimeout(() => {
-      console.log('the fuck', this.mentionInput)
       this.mentionInput.focus()
     }, 100)
   }
