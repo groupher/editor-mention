@@ -95,7 +95,7 @@ export default class Mention {
       this.selectionStateChecked = false
 
       setTimeout(() => {
-        console.log("this.mentionInput on blur: ", this.mentionInput.value)
+        console.log('this.mentionInput on blur: ', this.mentionInput.value)
         const mentionEl = document.querySelector('#' + this.CSS.mention)
         console.log('blurred: ', mentionEl)
 
@@ -112,7 +112,7 @@ export default class Mention {
 
     this.mentionInput.addEventListener(
       'keyup',
-      debounce(this.handleMentionInput.bind(this), 200),
+      debounce(this.handleInput.bind(this), 200),
     )
   }
 
@@ -121,7 +121,11 @@ export default class Mention {
    *
    * @return {void}
    */
-  handleMentionInput(ev) {
+  handleInput(ev) {
+    if (ev.code === 'Backspace' && this.mentionInput.value === '') {
+      this.cleanUp()
+      return
+    }
     if (ev.code === 'Escape') {
       // clear the mention input and close the toolbar
       this.mentionInput.value = ''
@@ -232,7 +236,7 @@ export default class Mention {
    *
    * @param {Range} range - selected fragment
    */
-  surround(range) { }
+  surround(range) {}
 
   /**
    * Check and change Term's state for current selection
