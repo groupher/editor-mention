@@ -92,8 +92,6 @@ export default class Mention {
      * @return {void}
      */
     this.mentionInput.addEventListener('blur', () => {
-      this.selectionStateChecked = false
-
       setTimeout(() => {
         console.log('this.mentionInput on blur: ', this.mentionInput.value)
         const mentionEl = document.querySelector('#' + this.CSS.mention)
@@ -104,8 +102,6 @@ export default class Mention {
         }
       }, 300)
     }) // blur end
-
-    this.selectionStateChecked = false
 
     this.mentionContainer.appendChild(this.mentionInput)
     this.mentionContainer.appendChild(this.suggestionContainer)
@@ -242,19 +238,13 @@ export default class Mention {
    * Check and change Term's state for current selection
    */
   checkState(termTag) {
-    if (!termTag || termTag.anchorNode.id !== CSS.mention) {
-      this.selectionStateChecked = false
-      return restoreDefaultInlineTools()
-    }
-
-    if (this.selectionStateChecked) return
+    if (!termTag || termTag.anchorNode.id !== CSS.mention) return
 
     if (termTag.anchorNode.id === CSS.mention) {
       return this.handleMentionActions()
     }
 
     // normal inline tools
-    this.selectionStateChecked = false
     return restoreDefaultInlineTools()
   }
 
@@ -263,7 +253,6 @@ export default class Mention {
    * 隐藏正常的 粗体，斜体等等 inline-toolbar 按钮，这里是借用了自带 popover 的一个 hack
    */
   handleMentionActions() {
-    this.selectionStateChecked = true
     keepCustomInlineToolOnly('mention')
 
     this.clearSuggestions()
