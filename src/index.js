@@ -232,13 +232,20 @@ export default class Mention {
    *
    * @param {Range} range - selected fragment
    */
-  surround(range) {}
+  surround(range) { }
 
   /**
    * Check and change Term's state for current selection
    */
   checkState(termTag) {
-    if (!termTag || termTag.anchorNode.id !== CSS.mention) return
+    // NOTE: if emoji is init after mention, then the restoreDefaultInlineTools should be called
+    // otherwise restoreDefaultInlineTools should not be called, because the mention plugin 
+    // called first
+    // 
+    // restoreDefaultInlineTools 是否调用和 mention / emoji 的初始化循序有关系，
+    // 如果 mention 在 emoji 之前初始化了，那么 emoji 这里就不需要调用 restoreDefaultInlineTools, 
+    // 否则会导致 mention  无法正常显示。反之亦然。
+    if (!termTag || termTag.anchorNode.id !== CSS.mention) return restoreDefaultInlineTools()
 
     if (termTag.anchorNode.id === CSS.mention) {
       return this.handleMentionActions()
