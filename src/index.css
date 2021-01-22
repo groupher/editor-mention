@@ -1,5 +1,8 @@
-.cdx-mention-toolbar-block {
+.cdx-hidden-toolbar-block {
   display: inline-block;
+  min-width: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
 }
 
 .cdx-mention {
@@ -57,15 +60,14 @@
 }
 
 .cdx-mention__input {
+  margin-bottom: 8px;
   outline: none;
   box-sizing: border-box;
-  margin: 0;
   padding: 5px;
   font-variant: tabular-nums;
   list-style: none;
   font-feature-settings: 'tnum';
   position: relative;
-  display: inline-block;
   width: 180px;
   height: 26px;
   color: rgba(0, 0, 0, 0.65);
@@ -82,7 +84,6 @@
   min-height: 1px;
   max-height: 300px;
   overflow: hidden;
-  margin-top: 5px;
 }
 
 .cdx-mention-suggestion {
@@ -98,7 +99,7 @@
   opacity: 0.9;
 }
 .cdx-mention-suggestion:last-child {
-  margin-bottom: 5px;
+  margin-bottom: 8px;
 }
 
 .cdx-mention-suggestion:hover {

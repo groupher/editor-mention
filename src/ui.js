@@ -1,5 +1,6 @@
 import {
   make,
+  CSS,
   debounce,
   moveCaretToEnd,
   keepCustomInlineToolOnly,
@@ -31,7 +32,6 @@ export default class UI {
       // active: this.api.styles.inlineToolButtonActive,
       // mention
       mention: CSS.mention,
-      mentionToolbarBlock: 'cdx-mention-toolbar-block',
       mentionContainer: 'cdx-mention__container',
       mentionInput: 'cdx-mention__input',
       mentionIntro: 'cdx-mention-suggestion__intro',
@@ -95,12 +95,7 @@ export default class UI {
      */
     this.nodes.mentionInput.addEventListener('blur', () => {
       setTimeout(() => {
-        console.log(
-          'this.mentionInput on blur: ',
-          this.nodes.mentionInput.value,
-        )
         const mentionEl = document.querySelector('#' + this.CSS.mention)
-        console.log('blurred: ', mentionEl)
 
         if (this.nodes.mentionInput.value.trim() === '') {
           this._cleanUp()
@@ -190,7 +185,6 @@ export default class UI {
    * @return {HTMLElement}
    */
   _drawSuggestion(user) {
-    // TODO: not use document?
     const mentionEl = document.querySelector('#' + this.CSS.mention)
     const suggestionWrapper = make('div', [this.CSS.suggestion], {})
 
@@ -212,6 +206,8 @@ export default class UI {
     suggestionWrapper.appendChild(intro)
 
     suggestionWrapper.addEventListener('click', () => {
+      console.log('# click user: ', user)
+
       this.nodes.mentionInput.value = user.title
       mentionEl.innerHTML = user.title
       this._cleanUp()

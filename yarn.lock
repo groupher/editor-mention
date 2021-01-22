@@ -708,9 +708,9 @@
     lodash "^4.17.13"
     to-fast-properties "^2.0.0"
 
-"@groupher/editor-utils@0.1.91":
-  version "0.1.91"
-  resolved "https://registry.npm.taobao.org/@groupher/editor-utils/download/@groupher/editor-utils-0.1.91.tgz#5a7e07bf8214b07d49e389b91e81f1ea63f30aa2"
+"@groupher/editor-utils@0.1.93":
+  version "0.1.93"
+  resolved "https://registry.npm.taobao.org/@groupher/editor-utils/download/@groupher/editor-utils-0.1.93.tgz#d39542931cc9db373680d1d71b53f1452e0741f7"
   dependencies:
     debug "^4.1.1"
     pubsub-js "^1.8.0"
