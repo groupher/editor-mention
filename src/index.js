@@ -1,15 +1,10 @@
 import {
   make,
-  debounce,
-  CSS,
   INLINE_BLOCK_TAG,
-  moveCaretToEnd,
-  keepCustomInlineToolOnly,
   restoreDefaultInlineTools,
-  removeElementByClass,
-  insertHtmlAtCaret,
-  convertElementToTextIfNeed,
 } from '@groupher/editor-utils'
+
+import UI from './ui'
 import './index.css'
 
 /**
@@ -39,6 +34,9 @@ export default class Mention {
      */
 
     this.CSS = {
+      // base: this.api.styles.inlineToolButton,
+      // active: this.api.styles.inlineToolButtonActive,
+      // mention
       mention: CSS.mention,
       mentionToolbarBlock: 'cdx-mention-toolbar-block',
       mentionContainer: 'cdx-mention__container',
@@ -47,173 +45,23 @@ export default class Mention {
       mentionAvatar: 'cdx-mention-suggestion__avatar',
       mentionTitle: 'cdx-mention-suggestion__title',
       mentionDesc: 'cdx-mention-suggestion__desc',
-      suggestionContainer: 'cdx-mention-suggestion-container',
+      // tab
+      tabWrapper: 'cdx-mention__tab',
+      tabItem: 'cdx-mention__tab_item',
+      tabItemActive: 'cdx-mention__tab_item_active',
+
+      // suggestion
+      suggestionContainer: 'cdx-mention-suggestion-wrapper',
       suggestion: 'cdx-mention-suggestion',
+      // inline toolbar
       inlineToolBar: 'ce-inline-toolbar',
       inlineToolBarOpen: 'ce-inline-toolbar--showed',
       inlineToolbarButtons: 'ce-inline-toolbar__buttons',
     }
 
-    /**
-     * CSS classes
-     */
-    this.iconClasses = {
-      base: this.api.styles.inlineToolButton,
-      active: this.api.styles.inlineToolButtonActive,
-    }
-
-    this.mentionContainer = make('div', [this.CSS.mentionContainer], {})
-    this.suggestionContainer = make('div', [this.CSS.suggestionContainer], {})
-
-    this.mentionInput = make('input', [this.CSS.mentionInput], {
-      innerHTML: '你想 @ 谁?',
-      autofocus: true,
+    this.ui = new UI({
+      api,
     })
-
-    this.mentionInput.addEventListener('focus', () => {
-      const mentionEl = document.querySelector('#' + this.CSS.mention)
-
-      if (mentionEl) {
-        const mentionCursorHolder = make('span', CSS.focusHolder)
-        mentionEl.parentNode.insertBefore(
-          mentionCursorHolder,
-          mentionEl.nextSibling,
-        )
-      }
-    })
-
-    /**
-     * should clear anchors after user manually click outside the popover,
-     * otherwise will confuse the next insert
-     *
-     * 用户手动点击其他位置造成失焦以后，如果没有输入的话需要清理 anchors，
-     * 否则会造成下次插入 mention 的时候定位异常
-     *
-     * @return {void}
-     */
-    this.mentionInput.addEventListener('blur', () => {
-      setTimeout(() => {
-        console.log('this.mentionInput on blur: ', this.mentionInput.value)
-        const mentionEl = document.querySelector('#' + this.CSS.mention)
-        console.log('blurred: ', mentionEl)
-
-        if (this.mentionInput.value.trim() === '') {
-          this.cleanUp()
-        }
-      }, 300)
-    }) // blur end
-
-    this.mentionContainer.appendChild(this.mentionInput)
-    this.mentionContainer.appendChild(this.suggestionContainer)
-
-    this.mentionInput.addEventListener(
-      'keyup',
-      debounce(this.handleInput.bind(this), 200),
-    )
-  }
-
-  /**
-   * handle mention input
-   *
-   * @return {void}
-   */
-  handleInput(ev) {
-    if (ev.code === 'Backspace' && this.mentionInput.value === '') {
-      this.cleanUp()
-      return
-    }
-    if (ev.code === 'Escape') {
-      // clear the mention input and close the toolbar
-      this.mentionInput.value = ''
-      this.cleanUp()
-      return
-    }
-
-    if (ev.code === 'Enter') {
-      return console.log('select first item')
-    }
-
-    const user = {
-      id: 1,
-      title: 'mydaerxym',
-      desc: 'author of the ..',
-      avatar: 'https://avatars0.githubusercontent.com/u/6184465?s=40&v=4',
-    }
-
-    const suggestion = this.makeSuggestion(user)
-
-    this.suggestionContainer.appendChild(suggestion)
-  }
-
-  /**
-   * generate suggestion block
-   *
-   * @return {HTMLElement}
-   */
-  makeSuggestion(user) {
-    const mentionEl = document.querySelector('#' + this.CSS.mention)
-    const suggestionWrapper = make('div', [this.CSS.suggestion], {})
-
-    const avatar = make('img', [this.CSS.mentionAvatar], {
-      src: user.avatar,
-    })
-
-    const intro = make('div', [this.CSS.mentionIntro], {})
-    const title = make('div', [this.CSS.mentionTitle], {
-      innerText: user.title,
-    })
-    const desc = make('div', [this.CSS.mentionDesc], {
-      innerText: user.desc,
-    })
-
-    suggestionWrapper.appendChild(avatar)
-    intro.appendChild(title)
-    intro.appendChild(desc)
-    suggestionWrapper.appendChild(intro)
-
-    suggestionWrapper.addEventListener('click', () => {
-      this.mentionInput.value = user.title
-      mentionEl.innerHTML = user.title
-      this.cleanUp()
-    })
-
-    // https://avatars0.githubusercontent.com/u/6184465?s=40&v=4
-
-    return suggestionWrapper
-  }
-
-  /**
-   * close the mention popover, then focus to mention holder
-   *
-   * @return {void}
-   */
-  cleanUp() {
-    const mentionEl = document.querySelector('#' + this.CSS.mention)
-    if (!mentionEl) return
-
-    // empty the mention input
-    // this.mentionInput.value = ''
-    this.clearSuggestions()
-
-    // closePopover
-    const inlineToolBar = document.querySelector('.' + this.CSS.inlineToolBar)
-    // this.api.toolbar.close is not work
-    // so close the toolbar by remove the open class manually
-    // this.api.toolbar.close()
-    inlineToolBar.classList.remove(this.CSS.inlineToolBarOpen)
-
-    // move caret to end of the current mention
-    if (mentionEl.nextElementSibling) {
-      moveCaretToEnd(mentionEl.nextElementSibling)
-    }
-
-    // mention holder id should be uniq
-    // 在 moveCaret 定位以后才可以删除，否则定位会失败
-    setTimeout(() => {
-      this.removeAllHolderIds()
-      removeElementByClass(CSS.focusHolder)
-      convertElementToTextIfNeed(mentionEl, this.mentionInput)
-    }, 50)
   }
 
   /**
@@ -228,72 +76,46 @@ export default class Mention {
   }
 
   /**
+   * editor.js render actions
+   *
+   * @returns {HTMLElement}
+   * @memberof Mention
+   */
+  renderActions() {
+    // this.nodes.mentionInput.placeholder = '你想 @ 谁?'
+
+    // return this.nodes.mention
+    return this.ui.renderActions()
+  }
+
+  /**
    * NOTE:  inline tool must have this method
    *
    * @param {Range} range - selected fragment
    */
-  surround(range) { }
+  surround(range) {}
 
   /**
    * Check and change Term's state for current selection
    */
   checkState(termTag) {
+    console.log('mention checkState termTag anchorNode: ', termTag.anchorNode)
     // NOTE: if emoji is init after mention, then the restoreDefaultInlineTools should be called
-    // otherwise restoreDefaultInlineTools should not be called, because the mention plugin 
+    // otherwise restoreDefaultInlineTools should not be called, because the mention plugin
     // called first
-    // 
+    //
     // restoreDefaultInlineTools 是否调用和 mention / emoji 的初始化循序有关系，
-    // 如果 mention 在 emoji 之前初始化了，那么 emoji 这里就不需要调用 restoreDefaultInlineTools, 
+    // 如果 mention 在 emoji 之前初始化了，那么 emoji 这里就不需要调用 restoreDefaultInlineTools,
     // 否则会导致 mention  无法正常显示。反之亦然。
-    if (!termTag || termTag.anchorNode.id !== CSS.mention) return restoreDefaultInlineTools()
+    if (!termTag || termTag.anchorNode.id !== CSS.mention)
+      return restoreDefaultInlineTools()
 
     if (termTag.anchorNode.id === CSS.mention) {
-      return this.handleMentionActions()
+      return this.ui.handleMentionActions()
     }
 
     // normal inline tools
     return restoreDefaultInlineTools()
-  }
-
-  /**
-   * show mention suggestions, hide normal actions like bold, italic etc...inline-toolbar buttons
-   * 隐藏正常的 粗体，斜体等等 inline-toolbar 按钮，这里是借用了自带 popover 的一个 hack
-   */
-  handleMentionActions() {
-    keepCustomInlineToolOnly('mention')
-
-    this.clearSuggestions()
-    this.mentionInput.value = ''
-
-    setTimeout(() => {
-      this.mentionInput.focus()
-    }, 100)
-  }
-
-  // clear suggestions list
-  clearSuggestions() {
-    console.log('clearSuggestions')
-    const node = document.querySelector('.' + this.CSS.suggestionContainer)
-
-    while (node.firstChild) {
-      node.removeChild(node.firstChild)
-    }
-  }
-
-  // 删除所有 mention-holder 的 id， 因为 closePopover 无法处理失焦后
-  // 自动隐藏的情况
-  removeAllHolderIds() {
-    const holders = document.querySelectorAll('.' + this.CSS.mention)
-
-    holders.forEach((item) => item.removeAttribute('id'))
-
-    return false
-  }
-
-  renderActions() {
-    this.mentionInput.placeholder = '你想 @ 谁?'
-
-    return this.mentionContainer
   }
 
   /**
