@@ -79,6 +79,11 @@
   transition: all 0.3s;
 }
 
+.cdx-mention__input::placeholder {
+  font-size: 12px;
+  font-style: italic;
+}
+
 .cdx-mention-suggestion-wrapper {
   width: 100%;
   min-height: 1px;
