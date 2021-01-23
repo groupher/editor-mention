@@ -10,21 +10,19 @@
   font-weight: bold;
   outline: none;
   margin-left: 4px;
-  margin-right: 4px;
+  margin-right: 1px;
 }
 .cdx-mention::before {
-  content: '@';
+  content: attr(data-sign);
+  /* content: '@'; */
   color: #1785a9;
-  width: 12px;
-  height: 12px;
-  margin-right: 2px;
   border-radius: 100%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
+  display: inline-block;
+  font-size: 14px;
   transform: rotateZ(-10deg);
-  font-family: serif;
+  font-family: inherit;
+  margin-right: 2px;
+  opacity: 0.65;
 }
 .cdx-mention__container {
   padding: 5px;
@@ -42,8 +40,8 @@
 .cdx-mention__tab_item {
   font-size: 12px;
   margin-right: 12px;
-  border-bottom: 2px solid transparent;
-  padding-bottom: 4px;
+  border-bottom: 1px solid transparent;
+  padding-bottom: 3px;
   opacity: 0.6;
 }
 
@@ -53,9 +51,8 @@
 }
 
 .cdx-mention__tab_item_active {
-  font-size: 12px;
+  margin-top: -1px;
   opacity: 1;
-  padding-bottom: 3px;
   border-bottom-color: grey;
 }
 

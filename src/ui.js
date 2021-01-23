@@ -5,8 +5,10 @@ import {
   moveCaretToEnd,
   keepCustomInlineToolOnly,
   removeElementByClass,
-  convertElementToTextIfNeed,
+  convertElementToText,
 } from '@groupher/editor-utils'
+
+import { TAB } from './constant'
 
 import './index.css'
 
@@ -27,10 +29,21 @@ export default class UI {
      * @type {string}
      */
 
+    // current active tab
+    this.activeTab = TAB.USER
+    this.tabConfig = [
+      {
+        title: '用户',
+        raw: TAB.USER,
+      },
+      {
+        title: '帖子',
+        raw: TAB.POST,
+      },
+    ]
+
     this.CSS = {
-      // base: this.api.styles.inlineToolButton,
-      // active: this.api.styles.inlineToolButtonActive,
-      // mention
+      //
       mention: CSS.mention,
       mentionContainer: 'cdx-mention__container',
       mentionInput: 'cdx-mention__input',
@@ -52,65 +65,119 @@ export default class UI {
       inlineToolbarButtons: 'ce-inline-toolbar__buttons',
     }
 
+    this._initNodes()
+  }
+
+  _initNodes() {
     this.nodes = {
       mention: make('div', this.CSS.mentionContainer),
       suggestions: make('div', this.CSS.suggestionContainer),
-      tab: make('div', this.CSS.tabWrapper),
+      tab: this._drawTab(),
       mentionInput: make('input', this.CSS.mentionInput, {
         autofocus: true,
         placeholder: '你想 @ 谁？',
       }),
     }
 
-    const TabItemEl = make('div', [this.CSS.tabItem, this.CSS.tabItemActive], {
-      innerHTML: '用户',
-    })
-    const TabItem2El = make('div', this.CSS.tabItem, {
-      innerHTML: '帖子',
-    })
-
-    this.nodes.tab.appendChild(TabItemEl)
-    this.nodes.tab.appendChild(TabItem2El)
-
-    this.nodes.mentionInput.addEventListener('focus', () => {
-      const mentionEl = document.querySelector('#' + this.CSS.mention)
-
-      if (mentionEl) {
-        const mentionCursorHolder = make('span', CSS.focusHolder)
-        mentionEl.parentNode.insertBefore(
-          mentionCursorHolder,
-          mentionEl.nextSibling,
-        )
-      }
-    })
-
-    /**
-     * should clear anchors after user manually click outside the popover,
-     * otherwise will confuse the next insert
-     *
-     * 用户手动点击其他位置造成失焦以后，如果没有输入的话需要清理 anchors，
-     * 否则会造成下次插入 mention 的时候定位异常
-     *
-     * @return {void}
-     */
-    this.nodes.mentionInput.addEventListener('blur', () => {
-      setTimeout(() => {
-        const mentionEl = document.querySelector('#' + this.CSS.mention)
-
-        if (this.nodes.mentionInput.value.trim() === '') {
-          this._cleanUp()
-        }
-      }, 300)
-    }) // blur end
+    this._initMentionInput()
 
     this.nodes.mention.appendChild(this.nodes.tab)
     this.nodes.mention.appendChild(this.nodes.mentionInput)
     this.nodes.mention.appendChild(this.nodes.suggestions)
+  }
 
-    this.nodes.mentionInput.addEventListener(
+  /**
+   * handle tab change
+   * @param {string} tab - tab raw
+   * @memberof UI
+   */
+  _handleTabChange(tab) {
+    if (this.activeTab === tab) return
+
+    this.activeTab = tab
+
+    const TabEl = this._drawTab()
+    this.nodes.tab.replaceWith(TabEl)
+    this.nodes.tab = TabEl
+
+    setTimeout(() => this._applyInputStyle())
+  }
+
+  /**
+   * different input style for each tab
+   *
+   * @memberof UI
+   */
+  _applyInputStyle() {
+    switch (this.activeTab) {
+      case TAB.POST: {
+        this.nodes.mentionInput.style.width = '280px'
+        this.nodes.mentionInput.placeholder = '文章标题'
+        break
+      }
+
+      default: {
+        this.nodes.mentionInput.style.width = '180px'
+        this.nodes.mentionInput.placeholder = '你想 @ 谁?'
+        break
+      }
+    }
+    // this._initMentionInput()
+    this.nodes.mentionInput.focus()
+  }
+
+  _initMentionInput() {
+    this.api.listeners.off(this.nodes.mentionInput, 'focus')
+    this.api.listeners.off(this.nodes.mentionInput, 'keyup')
+
+    this.api.listeners.on(this.nodes.mentionInput, 'focus', () => {
+      const MentionEl = document.querySelector('#' + this.CSS.mention)
+
+      if (MentionEl) {
+        const MentionParentEl = MentionEl.parentNode
+
+        // 防止重复插入 holder, 否则会导致多次聚焦后光标错位
+        if (!MentionParentEl.querySelector(`.${CSS.focusHolder}`)) {
+          const MentionCursorHolder = make('span', CSS.focusHolder)
+          MentionParentEl.insertBefore(
+            MentionCursorHolder,
+            MentionEl.nextSibling,
+          )
+        }
+      }
+    })
+
+    this.api.listeners.on(
+      this.nodes.mentionInput,
       'keyup',
       debounce(this._handleInput.bind(this), 200),
     )
+    // this.nodes.mentionInput.addEventListener('focus', )
+  }
+
+  /**
+   * draw tab
+   * @return {HTMLElement}
+   * @memberof UI
+   */
+  _drawTab() {
+    const TabEl = make('div', this.CSS.tabWrapper)
+    this.tabConfig.forEach((tabItem) => {
+      const classList = [this.CSS.tabItem]
+      if (tabItem.raw === this.activeTab) classList.push(this.CSS.tabItemActive)
+
+      const TabItemEl = make('div', classList, {
+        innerHTML: tabItem.title,
+      })
+
+      TabItemEl.addEventListener('click', () => {
+        this._handleTabChange(tabItem.raw)
+      })
+
+      TabEl.appendChild(TabItemEl)
+    })
+
+    return TabEl
   }
 
   /**
@@ -152,10 +219,6 @@ export default class UI {
    * @return {void}
    */
   _handleInput(ev) {
-    if (ev.code === 'Backspace' && this.nodes.mentionInput.value === '') {
-      this._cleanUp()
-      return
-    }
     if (ev.code === 'Escape') {
       // clear the mention input and close the toolbar
       this.nodes.mentionInput.value = ''
@@ -206,11 +269,17 @@ export default class UI {
     suggestionWrapper.appendChild(intro)
 
     suggestionWrapper.addEventListener('click', () => {
-      console.log('# click user: ', user)
-
       this.nodes.mentionInput.value = user.title
-      mentionEl.innerHTML = user.title
-      this._cleanUp()
+      mentionEl.innerHTML = `${user.title} `
+
+      console.log('<<<< mentionEl: ', mentionEl)
+      if (this.activeTab === TAB.USER) {
+        mentionEl.setAttribute('data-sign', '@')
+      } else {
+        mentionEl.setAttribute('data-sign', '#')
+      }
+
+      setTimeout(() => this._cleanUp())
     })
 
     // https://avatars0.githubusercontent.com/u/6184465?s=40&v=4
@@ -224,8 +293,13 @@ export default class UI {
    * @return {void}
    */
   _cleanUp() {
+    console.log('_cleanUp')
+
     const mentionEl = document.querySelector('#' + this.CSS.mention)
     if (!mentionEl) return
+
+    // clear input
+    this.nodes.mentionInput.value = ''
 
     // empty the mention input
     this._clearSuggestions()
@@ -237,6 +311,8 @@ export default class UI {
     // this.api.toolbar.close()
     inlineToolBar.classList.remove(this.CSS.inlineToolBarOpen)
 
+    console.log('> clean up the fucking mentionEl: ', mentionEl)
+    console.log('> nextElementSibling: ', mentionEl.nextElementSibling)
     // move caret to end of the current mention
     if (mentionEl.nextElementSibling) {
       moveCaretToEnd(mentionEl.nextElementSibling)
@@ -247,8 +323,10 @@ export default class UI {
     setTimeout(() => {
       this._removeAllHolderIds()
       removeElementByClass(CSS.focusHolder)
-      convertElementToTextIfNeed(mentionEl, this.nodes.mentionInput)
-    }, 50)
+      if (mentionEl.innerHTML === '&nbsp;') {
+        convertElementToText(mentionEl, true)
+      }
+    })
   }
 
   // clear suggestions list
@@ -269,5 +347,24 @@ export default class UI {
     holders.forEach((item) => item.removeAttribute('id'))
 
     return false
+  }
+
+  /**
+   * see @link https://editorjs.io/inline-tools-api-1#clear
+   * @memberof Mention
+   */
+  clear() {
+    /**
+     * should clear anchors after user manually click outside the popover,
+     * otherwise will confuse the next insert
+     *
+     * 用户手动点击其他位置造成失焦以后，如果没有输入的话需要清理 anchors，
+     * 否则会造成下次插入 mention 的时候定位异常
+     *
+     */
+    setTimeout(() => {
+      const mentionEl = document.querySelector('#' + this.CSS.mention)
+      this._cleanUp()
+    })
   }
 }

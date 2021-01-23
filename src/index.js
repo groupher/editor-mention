@@ -110,4 +110,12 @@ export default class Mention {
       },
     }
   }
+
+  /**
+   * see @link https://editorjs.io/inline-tools-api-1#clear
+   * @memberof Mention
+   */
+  clear() {
+    this.ui.clear()
+  }
 }
