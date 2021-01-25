@@ -33,7 +33,7 @@
     "webpack-cli": "^3.2.3"
   },
   "dependencies": {
-    "@groupher/editor-utils": "0.2.12",
+    "@groupher/editor-utils": "0.2.13",
     "@groupher/eslint-config-web": "^2.0.9"
   }
 }

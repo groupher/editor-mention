@@ -87,9 +87,7 @@ export default class UI {
       mention: make('div', this.CSS.mentionContainer),
       suggestions: make('div', this.CSS.suggestionContainer),
       tab: this._drawTab(),
-      mentionInput: make('input', this.CSS.mentionInput, {
-        autofocus: true,
-      }),
+      mentionInput: make('input', this.CSS.mentionInput),
     }
 
     this._initMentionInput()
@@ -183,10 +181,13 @@ export default class UI {
    * 隐藏正常的 粗体，斜体等等 inline-toolbar 按钮，这里是借用了自带 popover 的一个 hack
    * @memberof UI
    */
-  handleMentionActions() {
-    keepCustomInlineToolOnly('mention')
+  _handleMentionActions() {
+    // NOTE: the custom tool only visible on next tick
+    setTimeout(() => keepCustomInlineToolOnly('mention'))
 
-    setTimeout(() => this.nodes.mentionInput.focus(), 100)
+    setTimeout(() => {
+      this.nodes.mentionInput.focus()
+    }, 100)
   }
 
   /**

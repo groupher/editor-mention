@@ -91,7 +91,7 @@ export default class Mention {
     }
 
     if (termTag.anchorNode.id === CSS.mention) {
-      return this.ui.handleMentionActions()
+      return this.ui._handleMentionActions()
     }
 
     // normal inline tools
