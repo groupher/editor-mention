@@ -11,7 +11,14 @@
   outline: none;
   margin-left: 4px;
   margin-right: 1px;
+  cursor: pointer;
+  text-decoration: none;
 }
+
+.cdx-mention:hover {
+  text-decoration: underline;
+}
+
 .cdx-mention::before {
   content: attr(data-sign);
   /* content: '@'; */
@@ -25,7 +32,7 @@
   opacity: 0.65;
 }
 .cdx-mention__container {
-  padding: 5px;
+  padding: 8px;
   padding-bottom: 0px;
 }
 

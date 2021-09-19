@@ -157,23 +157,24 @@ export default class UI {
    * @memberof UI
    */
   _drawTab() {
-    const TabEl = make('div', this.CSS.tabWrapper)
-    this.tabConfig.forEach((tabItem) => {
-      const classList = [this.CSS.tabItem]
-      if (tabItem.raw === this.activeTab) classList.push(this.CSS.tabItemActive)
+    return make('div')
+    // const TabEl = make('div', this.CSS.tabWrapper)
+    // this.tabConfig.forEach((tabItem) => {
+    //   const classList = [this.CSS.tabItem]
+    //   if (tabItem.raw === this.activeTab) classList.push(this.CSS.tabItemActive)
 
-      const TabItemEl = make('div', classList, {
-        innerHTML: tabItem.title,
-      })
+    //   const TabItemEl = make('div', classList, {
+    //     innerHTML: tabItem.title,
+    //   })
 
-      TabItemEl.addEventListener('click', () => {
-        this._handleTabChange(tabItem.raw)
-      })
+    //   TabItemEl.addEventListener('click', () => {
+    //     this._handleTabChange(tabItem.raw)
+    //   })
 
-      TabEl.appendChild(TabItemEl)
-    })
+    //   TabEl.appendChild(TabItemEl)
+    // })
 
-    return TabEl
+    // return TabEl
   }
 
   /**

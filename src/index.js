@@ -95,7 +95,6 @@ export default class Mention {
     }
 
     // normal inline tools
-    console.log('restoreDefaultInlineTools 2')
     return restoreDefaultInlineTools()
   }
 
